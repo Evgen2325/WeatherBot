@@ -3,10 +3,10 @@ import requests
 import datetime
 
 bot = telebot.TeleBot("5141952410:AAGe2h9TmxyPrcajc5DliqbrBdSgiu4_ICA")
-weather_tokin = '4b73a57dc251d33c9042835b2d1dc0ec'
+API_tokin = '4b73a57dc251d33c9042835b2d1dc0ec'
 
 
-def get_weather(city, weather_tokin ):
+def get_weather(city, API_tokin ):
 
     code_smile = {'Clear': 'Ясно\U00002600',
                   'Clouds': 'Облачно\U00002601',
@@ -16,7 +16,7 @@ def get_weather(city, weather_tokin ):
                   'Snow': 'Снег\U0001F328',
                   'Mist': 'Туман\U0001F32B',}
     try:
-        response = requests.get(f'https://api.openweathermap.org/data/2.5/weather?q={city}&appid={weather_tokin}&lang=ru&units=metric')
+        response = requests.get(f'https://api.openweathermap.org/data/2.5/weather?q={city}&appid={API_tokin}&lang=ru&units=metric')
         data = response.json()
 
 
@@ -37,12 +37,11 @@ def get_weather(city, weather_tokin ):
               f'Ветер: {wind}м/с')
 
     except Exception as ex:
-        return ('Проверьте название города')
+        return ('Введите название города')
 
 @bot.message_handler()
 def send_welcome(message):
-    weather = get_weather(message.text, weather_tokin)
-    #name = f'Привет!, <b>{message.from_user.first_name} {message.from_user.last_name}</b>'
+    weather = get_weather(message.text, API_tokin)
     bot.send_message(message.chat.id, weather)
 
 bot.polling()
