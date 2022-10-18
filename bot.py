@@ -45,6 +45,4 @@ def send_welcome(message):
     #name = f'Привет!, <b>{message.from_user.first_name} {message.from_user.last_name}</b>'
     bot.send_message(message.chat.id, weather)
 
-
-
 bot.polling()
