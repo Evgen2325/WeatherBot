@@ -15,8 +15,8 @@ def get_weather(city, weather_tokin ):
                   'Snow': 'Снег\U0001F328',
                   'Mist': 'Туман\U0001F32B',}
     try:
-        url_ = requests.get(f'https://api.openweathermap.org/data/2.5/weather?q={city}&appid={weather_tokin}&lang=ru&units=metric')
-        data = url_.json()
+        response = requests.get(f'https://api.openweathermap.org/data/2.5/weather?q={city}&appid={weather_tokin}&lang=ru&units=metric')
+        data = response.json()
 
 
         city = data['name']
@@ -30,14 +30,13 @@ def get_weather(city, weather_tokin ):
         pressure = data['main']['pressure']
         wind = data['wind']['speed']
 
-        print(f'--------{datetime.datetime.now().strftime("%c")}--------\n'
+        return (f'--------{datetime.datetime.now().strftime("%c")}--------\n'
               f'Погода в городе: {city}\nТемпература: {cur_weather}C°{wd}\n'
               f'Влажность: {humidity}%\nДавление: {pressure} мм.рт.ст.\n'
               f'Ветер: {wind}м/с')
 
     except Exception as ex:
-        print(ex)
-        print('Проверьте название города')
+        return ('Проверьте название города')
 
 
 def main():
