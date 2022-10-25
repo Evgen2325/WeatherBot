@@ -2,10 +2,11 @@ import telebot
 import requests
 import datetime
 import random
+import json
 
 bot = telebot.TeleBot("5141952410:AAGe2h9TmxyPrcajc5DliqbrBdSgiu4_ICA")
 API_tokin = '4b73a57dc251d33c9042835b2d1dc0ec'
-
+apiKey = '6QH0KNY-F9QMSFK-QG52CWT-EZ54JYS'
 
 def get_weather(city, api_tokin):
     code_smile = {'Clear': 'Ясно\U00002600',
@@ -48,22 +49,85 @@ def generation_password():
         password += random.choice(symbols)
     return password
 
+def get_translate():
+    headers = {
+        'X-API-Key': apiKey,
+        'Content-Type': 'text/xml; charset=utf-8; application/json',
+        'Accept': 'application/json',
+    }
+    user_input = input("Введите текс ")
+    data = '{"texts": ["' + user_input + '"]  ,\n'  '"to": ["en"],\n        "from": "ru"\n    }'
+    response = requests.post('https://api.lecto.ai/v1/translate/text', headers=headers, data=data.encode('utf-8'))
+    var_json_object = json.loads(response.text)
+
+    translation = var_json_object.get('translations')[0].get('translated')[0]
+    return f'Твой перевод:\n\n{translation}'
+
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
-    name = (f'Привет, {message.from_user.first_name} {message.from_user.last_name} , если нужен пароль, введи слово "/password"\n'
-            f'Если хочешь узнать прогноз погоды, введи слово "/weather"')
-    bot.send_message(message.chat.id, name)
+    name = bot.reply_to(message, f'Привет, {message.from_user.first_name} {message.from_user.last_name}\n'
+                                 f'Eсли нужен пароль, введи слово "/password"\n'
+                                 f'Если хочешь узнать прогноз погоды, введи слово "/weather"\n'
+                                 f'Если хочешь перевести текст с русского на английский , введи слово "/translate"')
+    bot.register_next_step_handler(name, get_choice)
 
-
-@bot.message_handler(content_types=['text'])
-def send_password_weather(message):
+def get_choice(message):
     if message.text == '/password':
         generation = generation_password()
         bot.send_message(message.chat.id, generation)
-    elif message.text != '/password':
-        weather = get_weather(message.text, API_tokin)
-        bot.send_message(message.chat.id, weather)
+    elif message.text == '/weather':
+        name = bot.reply_to(message, f'Привет, {message.from_user.first_name} {message.from_user.last_name}\n'
+                                     f'Eсли нужен пароль, введи слово "/password"\n'
+                                     f'Если хочешь узнать прогноз погоды, введи слово "/weather"\n'
+                                     f'Если хочешь перевести текст с русского на английский , введи слово "/translate"')
+        bot.register_next_step_handler(name, send_weather)
+
+
+def send_weather(message):
+    if message.text == '/weather':
+       weather = get_weather(message.text, API_tokin)
+       bot.send_message(message.chat.id, weather)
+    #elif message.text != '/weather':
+        # name = bot.reply_to(message, f'Привет, {message.from_user.first_name} {message.from_user.last_name}\n'
+        #                          f'Eсли нужен пароль, введи слово "/password"\n'
+        #                          f'Если хочешь узнать прогноз погоды, введи слово "/weather"\n'
+        #                          f'Если хочешь перевести текст с русского на английский , введи слово "/translate"')
+         #bot.register_next_step_handler(message.chat.id, send_translate)
+
+def send_translate(message):
+     if message.text == '/translate':
+         translate = get_translate()
+         bot.send_message(message.chat.id, translate)
+     #elif message.text != '/translate':
+     #    name = bot.reply_to(message, f'Привет, {message.from_user.first_name} {message.from_user.last_name}\n'
+     #                             f'Eсли нужен пароль, введи слово "/password"\n'
+     #                             f'Если хочешь узнать прогноз погоды, введи слово "/weather"\n'
+     #                             f'Если хочешь перевести текст с русского на английский , введи слово "/translate"')
+         #bot.register_next_step_handler(message.chat.id, send_welcome)
+
+
+
+
+
+# @bot.message_handler(commands=['/translate'])
+# def send_translate(message):
+#     if message.text == '/translate':
+#         translate = get_translate()
+#         bot.send_message(message.chat.id, translate)
+
+# @bot.message_handler(content_types=['text'])
+# def send_weather(message):
+#     if message.text == '/weather':
+#         weather = get_weather(message.text, API_tokin)
+#         bot.send_message(message.chat.id, weather)
+#
+# @bot.message_handler(content_types=['text'])
+# def send_translate(message):
+#     if message.text == '/translate':
+#         translate = get_translate()
+#         bot.send_message(message.chat.id, translate)
+
 
 
 bot.polling()
