@@ -2,6 +2,7 @@ import requests
 import json
 
 apiKey = ('6QH0KNY-F9QMSFK-QG52CWT-EZ54JYS')
+#def translate():
 headers = {
     'X-API-Key': apiKey,
     'Content-Type': 'text/xml; charset=utf-8; application/json',
@@ -15,12 +16,9 @@ var_json_object = json.loads(response.text)
 translation = var_json_object.get('translations')[0].get('translated')[0]
 print(f'Твой перевод:\n\n{translation}')
 
-def get_tranlation_from_raw(raw_string):
-    result = ''
-    start_index = raw_string.find('translated')
 
 
-    return result
+
 
 
 
