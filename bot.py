@@ -10,7 +10,6 @@ apiKey = '6QH0KNY-F9QMSFK-QG52CWT-EZ54JYS'
 
 
 def get_weather(city, api_token):
-    print("strat weather funct")
     code_smile = {'Clear': 'Ясно\U00002600',
                   'Clouds': 'Облачно\U00002601',
                   'Thunderstorm': 'Гроза\U000026A1',
@@ -19,7 +18,8 @@ def get_weather(city, api_token):
                   'Snow': 'Снег\U0001F328',
                   'Mist': 'Туман\U0001F32B', }
     try:
-        response = requests.get(f'https://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_token}&lang=ru&units=metric')
+        response = requests.get(
+            f'https://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_token}&lang=ru&units=metric')
         data = response.json()
 
         city = data['name']
@@ -39,7 +39,6 @@ def get_weather(city, api_token):
                 f'Ветер: {wind}м/с')
 
     except Exception:
-        print("exception and try block didn't work")
         return 'Введите название города'
 
 
@@ -49,7 +48,6 @@ def get_weather_func(message):
 
 
 def generation_password():
-    print("Generation password started")
     symbols = '1234567890QWERTYUIOPASDFGHJKLZXCVBNM.,\?!-_'
     length = random.randint(10, 20)
     password = ''
@@ -72,28 +70,32 @@ def get_translate(user_input, api_key):
     return f'Твой перевод:\n\n{translation}'
 
 
+def get_translate_func(message):
+    translate = get_translate(message.text, apiKey)
+    bot.send_message(message.chat.id, translate)
+
+
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
-    response_message = bot.reply_to(message, f'Привет, {message.from_user.first_name} {message.from_user.last_name}\n'
-                                             f'Eсли нужен пароль, введи слово "/password"\n'
-                                             f'Если хочешь узнать прогноз погоды, введи слово "/weather"\n'
-                                             f'Если хочешь перевести текст с русского на английский , введи слово "/translate"')
+    response_message = bot.reply_to(message,
+                                    f'Привет, {message.from_user.first_name} {message.from_user.last_name}\n'
+                                    f'Eсли нужен пароль, введи слово "/password"\n'
+                                    f'Если хочешь узнать прогноз погоды, введи слово "/weather"\n'
+                                    f'Если хочешь перевести текст с русского на английский , введи слово "/translate"')
     bot.register_next_step_handler(response_message, get_choice)
 
 
 @bot.message_handler(commands=['weather', 'password', 'translate'])
 def get_choice(message):
     if message.text == '/weather':
-        response_message = bot.reply_to(message, "Input city bitch:\n")
+        response_message = bot.reply_to(message, "Введите название города:\n")
         bot.register_next_step_handler(response_message, get_weather_func)
     elif message.text == '/password':
         generation = generation_password()
         bot.send_message(message.chat.id, generation)
     elif message.text == '/translate':
-        # input city
-        text_to_translate = input("type text to translate")
-        translate = get_translate(text_to_translate, apiKey)
-        bot.send_message(message.chat.id, translate)
+        response_message = bot.reply_to(message, "Введите текст:\n")
+        bot.register_next_step_handler(response_message, get_translate_func)
 
 
 bot.polling()
