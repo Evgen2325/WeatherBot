@@ -3,6 +3,7 @@ import requests
 import datetime
 import random
 import json
+import csv
 
 bot = telebot.TeleBot("5141952410:AAGe2h9TmxyPrcajc5DliqbrBdSgiu4_ICA")
 API_token = 'b3bac59fbc7c91b92084626e3e72ec66'
@@ -47,6 +48,25 @@ def get_weather_func(message):
     bot.send_message(message.chat.id, weather)
 
 
+def get_reminder():
+    with open('file.csv', 'r') as f:
+        list_result = []
+        reader = csv.reader(f)
+        date_now = datetime.datetime.now().replace(microsecond=0)
+        for line in reader:
+            date_born = line[0]
+            date_born = datetime.datetime.strptime(date_born, '%d.%m.%Y')
+            date_born = date_born.replace(year=date_now.year)
+            if date_now > date_born:
+                date_born = date_born.replace(year=date_now.year + 1)
+                data_x = date_born - date_now
+            elif date_now < date_born:
+                date_born = date_born.replace(year=date_now.year)
+                data_x = date_born - date_now
+            list_result.append(f'До {line[1]} осталось {data_x.days} дней')
+        return '\n'.join(list_result)
+
+
 def generation_password():
     symbols = '1234567890QWERTYUIOPASDFGHJKLZXCVBNM.,\?!-_'
     length = random.randint(10, 20)
@@ -81,15 +101,20 @@ def send_welcome(message):
                                     f'Привет, {message.from_user.first_name} {message.from_user.last_name}\n'
                                     f'Eсли нужен пароль, введи слово "/password"\n'
                                     f'Если хочешь узнать прогноз погоды, введи слово "/weather"\n'
-                                    f'Если хочешь перевести текст с русского на английский , введи слово "/translate"')
+                                    f'Если хочешь перевести текст с русского на английский , введи слово "/translate"\n'
+                                    f'Если хочешь вызвать напоминание, введи команду "/reminder"')
+
     bot.register_next_step_handler(response_message, get_choice)
 
 
-@bot.message_handler(commands=['weather', 'password', 'translate'])
+@bot.message_handler(commands=['weather', 'password', 'translate', '/reminder'])
 def get_choice(message):
     if message.text == '/weather':
         response_message = bot.reply_to(message, "Введите название города:\n")
         bot.register_next_step_handler(response_message, get_weather_func)
+    elif message.text == '/reminder':
+        generation = get_reminder()
+        bot.send_message(message.chat.id, generation)
     elif message.text == '/password':
         generation = generation_password()
         bot.send_message(message.chat.id, generation)
