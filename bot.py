@@ -1,9 +1,10 @@
 import telebot
 import requests
 import datetime
-import random
 import json
 import csv
+
+from get_function.passwords import generate_random_password
 
 bot = telebot.TeleBot("5141952410:AAGe2h9TmxyPrcajc5DliqbrBdSgiu4_ICA")
 API_token = 'b3bac59fbc7c91b92084626e3e72ec66'
@@ -72,15 +73,6 @@ def get_reminder():
         return '\n'.join(result_dates)
 
 
-def generation_password():
-    symbols = '1234567890QWERTYUIOPASDFGHJKLZXCVBNM.,\\?!-_'
-    length = random.randint(10, 20)
-    password = ''
-    for i in range(int(length)):
-        password += random.choice(symbols)
-    return password
-
-
 def get_translate(user_input, api_key):
     headers = {
         'X-API-Key': api_key,
@@ -121,7 +113,7 @@ def get_choice(message):
         generation = get_reminder()
         bot.send_message(message.chat.id, generation)
     elif message.text == '/password':
-        generation = generation_password()
+        generation = generate_random_password()
         bot.send_message(message.chat.id, generation)
     elif message.text == '/translate':
         response_message = bot.reply_to(message, "Введите текст:\n")
