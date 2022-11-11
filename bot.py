@@ -5,6 +5,7 @@ import random
 import json
 import csv
 
+
 bot = telebot.TeleBot("5141952410:AAGe2h9TmxyPrcajc5DliqbrBdSgiu4_ICA")
 API_token = 'b3bac59fbc7c91b92084626e3e72ec66'
 apiKey = '6QH0KNY-F9QMSFK-QG52CWT-EZ54JYS'
@@ -107,7 +108,7 @@ def send_welcome(message):
     bot.register_next_step_handler(response_message, get_choice)
 
 
-@bot.message_handler(commands=['weather', 'password', 'translate', '/reminder'])
+@bot.message_handler(commands=['weather', 'password', 'translate', 'reminder'])
 def get_choice(message):
     if message.text == '/weather':
         response_message = bot.reply_to(message, "Введите название города:\n")
