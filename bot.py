@@ -5,7 +5,6 @@ import random
 import json
 import csv
 
-
 bot = telebot.TeleBot("5141952410:AAGe2h9TmxyPrcajc5DliqbrBdSgiu4_ICA")
 API_token = 'b3bac59fbc7c91b92084626e3e72ec66'
 apiKey = '6QH0KNY-F9QMSFK-QG52CWT-EZ54JYS'
@@ -50,26 +49,31 @@ def get_weather_func(message):
 
 
 def get_reminder():
+    result_dates = []
     with open('file.csv', 'r') as f:
-        list_result = []
         reader = csv.reader(f)
-        date_now = datetime.datetime.now().replace(microsecond=0)
+        date_now = datetime.datetime.now()
         for line in reader:
-            date_born = line[0]
-            date_born = datetime.datetime.strptime(date_born, '%d.%m.%Y')
-            date_born = date_born.replace(year=date_now.year)
-            if date_now > date_born:
-                date_born = date_born.replace(year=date_now.year + 1)
-                data_x = date_born - date_now
-            elif date_now < date_born:
-                date_born = date_born.replace(year=date_now.year)
-                data_x = date_born - date_now
-            list_result.append(f'До {line[1]} осталось {data_x.days} дней')
-        return '\n'.join(list_result)
+            parsed_date = line[0]
+            description = line[1]
+            date_x = datetime.datetime.strptime(parsed_date, '%d/%m/%Y').replace(year=date_now.year)
+            if date_x < date_now:
+                date_x = date_x.replace(year=date_now.year + 1)
+            days_until = date_x - date_now
+            print(date_x)
+            print(f"{date_now}\n---------")
+            print(date_x - date_now)
+            print(days_until)
+            print("next date.............\n\n")
+            if days_until != 0:
+                result_dates.append(f'{days_until.days} until {description}.')
+            else:
+                result_dates.append(f'{description} is Today')
+        return '\n'.join(result_dates)
 
 
 def generation_password():
-    symbols = '1234567890QWERTYUIOPASDFGHJKLZXCVBNM.,\?!-_'
+    symbols = '1234567890QWERTYUIOPASDFGHJKLZXCVBNM.,\\?!-_'
     length = random.randint(10, 20)
     password = ''
     for i in range(int(length)):
