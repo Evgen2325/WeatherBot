@@ -1,3 +1,0 @@
-bot = '5141952410:AAGe2h9TmxyPrcajc5DliqbrBdSgiu4_ICA'
-API_token = 'b3bac59fbc7c91b92084626e3e72ec66'
-apiKey = '6QH0KNY-F9QMSFK-QG52CWT-EZ54JYS'

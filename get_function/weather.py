@@ -1,6 +1,6 @@
 import requests
 import datetime
-
+import os
 
 def get_current_weather(city, api_token):
     code_smile = {'Clear': 'Ясно\U00002600',

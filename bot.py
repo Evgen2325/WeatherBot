@@ -1,23 +1,23 @@
-# from keys import bot, API_token, apiKey
+import os
+import telebot
+
+
 from get_function.passwords import generate_random_password
 from get_function.weather import get_current_weather
 from get_function.reminder_func import get_reminder_days
 from get_function.translate import get_your_translate
-import telebot
 
 
-bot =telebot.TeleBot('5141952410:AAGe2h9TmxyPrcajc5DliqbrBdSgiu4_ICA')
-API_token = 'b3bac59fbc7c91b92084626e3e72ec66'
-apiKey = '6QH0KNY-F9QMSFK-QG52CWT-EZ54JYS'
+bot = telebot.TeleBot(os.getenv('BOT_TOKEN'))
 
 
 def get_weather_func(message):
-    weather = get_current_weather(message.text, API_token)
+    weather = get_current_weather(message.text, os.getenv('WEATHER_API_TOKEN'))
     bot.send_message(message.chat.id, weather)
 
 
 def get_translate_func(message):
-    translate = get_your_translate(message.text, apiKey)
+    translate = get_your_translate(message.text, os.getenv('TRANSLATOR_API_TOKEN'))
     bot.send_message(message.chat.id, translate)
 
 
