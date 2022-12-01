@@ -18,22 +18,13 @@ class BotDataProvide:
         with self.connection:
             return self.cursor.execute("INSERT INTO 'reminder' ('user_values') VALUES (?)", (user_values))
 
-    # delete user_date
+    # TODO implement later
     def del_user_date(self):
-        with self.connection:
-            return self.cursor.execute("DELETE FROM 'reminder' WHERE user_values")
+        pass
+        # with self.connection:
+        #     return self.cursor.execute("DELETE FROM 'reminder' WHERE user_values")
 
     # get values and date
     def get_from(self):
         with self.connection:
             return self.cursor.execute("SELECT 'user_values', 'user_data' FROM 'reminder'")
-
-    # add columns
-    def add_columns(self):
-        with self.connection:
-            return self.cursor.execute("ALTER TABLE 'reminder' ADD 'user_data' DATE")
-
-    # delete columns
-    def del_columns(self):
-        with self.connection:
-            return self.cursor.execute("ALTER TABLE 'reminder' DROP COLUMN 'user_date'")
