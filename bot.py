@@ -1,12 +1,14 @@
 import os
 import telebot
 
+from data.bot_data import BotDataProvide
 from get_function.passwords import generate_random_password
 from get_function.weather import get_current_weather
 from get_function.reminder_func import get_reminder_days
 from get_function.translate import get_your_translate
 
 bot = telebot.TeleBot(os.getenv('BOT_TOKEN'))
+db = BotDataProvide("")
 
 
 def get_weather_func(message):
@@ -17,6 +19,13 @@ def get_weather_func(message):
 def get_translate_func(message):
     translate = get_your_translate(message.text, os.getenv('TRANSLATOR_API_TOKEN'))
     bot.send_message(message.chat.id, translate)
+
+
+def get_date_from_user_to_update_db(message):
+    # TODO add assertion for string
+    user_date = message.text.split("-")[0]
+    date_description = message.text.split("-")[1]
+    db.set_user_date(message.chat.id, user_date, date_description)
 
 
 @bot.message_handler(commands=['start'])
@@ -56,7 +65,8 @@ def send_reminder_dates_from_csv(message):
 
 @bot.message_handler(commands=['add_date'])
 def add_reminder_dates_to_db(message):
-    bot.send_message(message.chat.id, "add Date function runs")
+    response_message = bot.reply_to(message, "Date and desription (example '22/12/2023-mothers day')\n")
+    bot.register_next_step_handler(response_message, get_date_from_user_to_update_db)
 
 
 @bot.message_handler(commands=['get_date'])

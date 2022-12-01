@@ -14,9 +14,12 @@ class BotDataProvide:
                 "user_data DATE)")
 
     # create user_date
-    def set_user_date(self, user_values):
+    def set_user_date(self, user_id, datetime, description):
         with self.connection:
-            return self.cursor.execute("INSERT INTO 'reminder' ('user_values') VALUES (?)", (user_values))
+            return self.cursor.execute("INSERT INTO 'reminder' ('user_id', 'date', 'description') VALUES (?, ?, ?)",
+                                       (user_id,
+                                        datetime,
+                                        description))
 
     # TODO implement later
     def del_user_date(self):
