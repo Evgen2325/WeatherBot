@@ -54,4 +54,14 @@ def send_reminder_dates_from_csv(message):
     bot.send_message(message.chat.id, generation)
 
 
+@bot.message_handler(commands=['add_date'])
+def add_reminder_dates_to_db(message):
+    bot.send_message(message.chat.id, "add Date function runs")
+
+
+@bot.message_handler(commands=['get_date'])
+def get_reminder_dates_from_db(message):
+    bot.send_message(message.chat.id, "get Date function runs")
+
+
 bot.polling()
