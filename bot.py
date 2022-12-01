@@ -71,9 +71,12 @@ def add_reminder_dates_to_db(message):
 
 @bot.message_handler(commands=['get_date'])
 def get_reminder_dates_from_db(message):
+    result_string = ''
     dates_for_user = db.get_from(message.chat.id)
+    for single_date in dates_for_user:
+        result_string += single_date + "\n"
     # create one messsage from dates_for_user format
-    bot.send_message(message.chat.id, dates_for_user)
+    bot.send_message(message.chat.id, result_string)
 
 
 bot.polling()
