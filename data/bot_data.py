@@ -28,6 +28,6 @@ class BotDataProvide:
         #     return self.cursor.execute("DELETE FROM 'reminder' WHERE user_values")
 
     # get values and date
-    def get_from(self):
+    def get_from(self, user_id):
         with self.connection:
-            return self.cursor.execute("SELECT 'user_values', 'user_data' FROM 'reminder'")
+            return self.cursor.execute("SELECT 'date', 'description' FROM 'reminder' WHERE 'user_id' = ?", user_id)
