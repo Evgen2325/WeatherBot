@@ -10,12 +10,14 @@ class BotDataProvide:
     def create_table(self):
         with self.connection:
             return self.cursor.execute(
-                "CREATE TABLE IF NOT EXISTS 'reminder' (ID INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER UNIQUE, date DATE, description)")
+                "CREATE TABLE IF NOT EXISTS 'reminder' (ID INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER,"
+                " date DATE, description)")
 
     # create user_date
     def set_user_date(self, user_id, datetime, description):
         with self.connection:
-            return self.cursor.execute("INSERT INTO 'reminder' ('user_id', 'date', 'description') VALUES (?, ?, ?)", (user_id, datetime, description))
+            return self.cursor.execute("INSERT INTO 'reminder' ('user_id', 'date', 'description') VALUES (?, ?, ?)",
+                                       (user_id, datetime, description))
 
     # TODO implement later
     def del_user_date(self):
@@ -26,4 +28,4 @@ class BotDataProvide:
     # get values and date
     def get_from(self, user_id):
         with self.connection:
-            return self.cursor.execute("SELECT 'date', 'description' FROM 'reminder' WHERE 'user_id' = ?", user_id)
+            self.cursor.execute("SELECT * FROM reminder WHERE user_id = 1", (user_id)).fetchmany(5)

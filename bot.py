@@ -8,7 +8,7 @@ from get_function.reminder_func import get_reminder_days
 from get_function.translate import get_your_translate
 
 bot = telebot.TeleBot(os.getenv('BOT_TOKEN'))
-db = BotDataProvide("")
+db = BotDataProvide("date_for_tg.db")
 
 
 def get_weather_func(message):
@@ -26,6 +26,8 @@ def get_date_from_user_to_update_db(message):
     user_date = message.text.split("-")[0]
     date_description = message.text.split("-")[1]
     db.set_user_date(message.chat.id, user_date, date_description)
+    # bot.send_message(message.chat.id, f"wrong input, you need input like (example '22/12/2023-mothers day')\n")
+
 
 
 @bot.message_handler(commands=['start'])
@@ -36,7 +38,7 @@ def send_welcome(message):
                                     f'If you need to know the current weather, type the command "/weather"\n'
                                     f'If you want to translate text from Ru into En, type the command "/translate"\n'
                                     f'If you want to see a reminder, type the command "/reminder"')
-    # bot.register_next_step_handler(response_message, get_choice)
+    bot.send_message(message.chat.id, response_message)
 
 
 @bot.message_handler(commands=['weather'])
@@ -63,19 +65,19 @@ def send_reminder_dates_from_csv(message):
     bot.send_message(message.chat.id, generation)
 
 
-@bot.message_handler(commands=['add_date'])
+@bot.message_handler(commands=['add'])
 def add_reminder_dates_to_db(message):
     response_message = bot.reply_to(message, "Date and desription (example '22/12/2023-mothers day')\n")
     bot.register_next_step_handler(response_message, get_date_from_user_to_update_db)
 
 
-@bot.message_handler(commands=['get_date'])
+@bot.message_handler(commands=['get'])
 def get_reminder_dates_from_db(message):
     result_string = ''
     dates_for_user = db.get_from(message.chat.id)
     for single_date in dates_for_user:
         result_string += single_date + "\n"
-    # create one messsage from dates_for_user format
+    #create one messsage from dates_for_user format
     bot.send_message(message.chat.id, result_string)
 
 
