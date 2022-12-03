@@ -23,11 +23,12 @@ def get_translate_func(message):
 
 def get_date_from_user_to_update_db(message):
     # TODO add assertion for string
+    print(message.text)
+    print(message.chat.id)
     user_date = message.text.split("-")[0]
     date_description = message.text.split("-")[1]
-    db.set_user_date(message.chat.id, user_date, date_description)
+    print(db.set_user_date(message.chat.id, user_date, date_description))
     # bot.send_message(message.chat.id, f"wrong input, you need input like (example '22/12/2023-mothers day')\n")
-
 
 
 @bot.message_handler(commands=['start'])
@@ -73,11 +74,17 @@ def add_reminder_dates_to_db(message):
 
 @bot.message_handler(commands=['get'])
 def get_reminder_dates_from_db(message):
-    result_string = ''
+    dates = []
+    descriptions = []
     dates_for_user = db.get_from(message.chat.id)
     for single_date in dates_for_user:
-        result_string += single_date + "\n"
-    bot.send_message(message.chat.id, result_string)
+        date = single_date[2]
+        description = single_date[3]
+        dates.append(date)
+        descriptions.append(description)
+    print(descriptions)
+    print(dates)
+    # bot.send_message(message.chat.id, result_string)
 
 
 bot.polling()
