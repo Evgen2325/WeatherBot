@@ -1,10 +1,11 @@
 import os
 import telebot
+import datetime
+import re
 
 from data.bot_data import BotDataProvide
 from get_function.passwords import generate_random_password
 from get_function.weather import get_current_weather
-from get_function.reminder_func import get_reminder_days
 from get_function.translate import get_your_translate
 
 bot = telebot.TeleBot(os.getenv('BOT_TOKEN'))
@@ -22,12 +23,14 @@ def get_translate_func(message):
 
 
 def get_date_from_user_to_update_db(message):
-    # TODO add assertion for string
     user_date = message.text.split("-")[0]
     date_description = message.text.split("-")[1]
-    db.set_user_date(message.chat.id, user_date, date_description)
-    # bot.send_message(message.chat.id, f"wrong input, you need input like (example '22/12/2023-mothers day')\n")
-
+    check_dates = re.search(r'\d\d\D\d\d\D\d\d\d\d', user_date)
+    if user_date == check_dates[0]:
+        db.set_user_date(message.chat.id, user_date, date_description)
+        bot.send_message(message.chat.id, f'Your date was add')
+    elif user_date != check_dates[0]:
+        bot.send_message(message.chat.id, f'Wrong input, You need input like "22/12/2023-very important day"')
 
 
 @bot.message_handler(commands=['start'])
@@ -59,12 +62,6 @@ def send_translated_message(message):
     bot.register_next_step_handler(response_message, get_translate_func)
 
 
-@bot.message_handler(commands=['reminder'])
-def send_reminder_dates_from_csv(message):
-    generation = get_reminder_days()
-    bot.send_message(message.chat.id, generation)
-
-
 @bot.message_handler(commands=['add'])
 def add_reminder_dates_to_db(message):
     response_message = bot.reply_to(message, "Date and desription (example '22/12/2023-mothers day')\n")
@@ -73,11 +70,32 @@ def add_reminder_dates_to_db(message):
 
 @bot.message_handler(commands=['get'])
 def get_reminder_dates_from_db(message):
-    result_string = ''
+    dates = []
     dates_for_user = db.get_from(message.chat.id)
     for single_date in dates_for_user:
-        result_string += single_date + "\n"
-    bot.send_message(message.chat.id, result_string)
+        date = single_date[2]
+        description = single_date[3]
+        dates.append(date)
+        dates.append(description)
+    dates = '\n'.join(dates)
+    bot.send_message(message.chat.id, f' That`s yours dates \n{dates}')
+
+
+@bot.message_handler(commands=['reminder'])
+def get_date_for_reminder(message):
+    dates = []
+    dates_for_user = db.get_from(message.chat.id)
+    for single_date in dates_for_user:
+        date = single_date[2]
+        description = single_date[3]
+        date_now = datetime.datetime.now()
+        date_x = datetime.datetime.strptime(date, '%d/%m/%Y').replace(year=date_now.year)
+        if date_x < date_now:
+            date_x = date_x.replace(year=date_now.year + 1)
+        days_until = date_x - date_now
+        dates.append(f'{days_until.days} days until {description}.')
+    dates_update = '\n'.join(dates)
+    bot.send_message(message.chat.id, dates_update)
 
 
 bot.polling()
