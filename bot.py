@@ -64,7 +64,7 @@ def send_translated_message(message):
 
 @bot.message_handler(commands=['add'])
 def add_reminder_dates_to_db(message):
-    response_message = bot.reply_to(message, "Date and desription (example '22/12/2023-mothers day')\n")
+    response_message = bot.reply_to(message, "Date and description (example '22/12/2023-mothers day')\n")
     bot.register_next_step_handler(response_message, get_date_from_user_to_update_db)
 
 
