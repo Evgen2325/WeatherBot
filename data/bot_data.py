@@ -22,8 +22,6 @@ class BotDataProvide:
     # TODO implement later
     def del_user_date(self, user_id, ID):
         pass
-        # with self.connection:
-        #     return self.cursor.execute("DELETE FROM 'reminder' WHERE user_id = ?, ?", (user_id, ID))
 
     def get_from(self, user_id):
         with self.connection:

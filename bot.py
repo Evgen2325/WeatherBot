@@ -22,7 +22,7 @@ def get_translate_func(message):
     bot.send_message(message.chat.id, translate)
 
 
-def get_date_from_user_to_update_db(message):
+def add_user_dates_in_db(message):
     check_dates = message.text
     if re.match(r'\d{2}.\d{2}.\d{4}-.*$', check_dates):
         user_date = message.text.split("-")[0]
@@ -36,13 +36,13 @@ def get_date_from_user_to_update_db(message):
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
-    response_message = bot.reply_to(message,
-                                    f'Hello, {message.from_user.first_name} {message.from_user.last_name}\n'
-                                    f'If you need a password, type the command "/password"\n'
-                                    f'If you need to know the current weather, type the command "/weather"\n'
-                                    f'If you want to translate text from Ru into En, type the command "/translate"\n'
-                                    f'If you want to see a reminder, type the command "/reminder"')
-    bot.send_message(message.chat.id, response_message)
+    bot.send_message(message.chat.id, f'Hello, {message.from_user.first_name} {message.from_user.last_name}\n'
+                                      f'If you need a password, type the command "/password"\n'
+                                      f'If you need to know the current weather, type the command "/weather"\n'
+                                      f'If you want to add your dates, type the command "/add"\n'
+                                      f'If you want to see all your dates type the command "/get"\n'
+                                      f'If you want to see how many days are left until your dates, '
+                                      f'type the command "/reminder"')
 
 
 @bot.message_handler(commands=['weather'])
@@ -66,14 +66,14 @@ def send_translated_message(message):
 @bot.message_handler(commands=['add'])
 def add_reminder_dates_to_db(message):
     response_message = bot.reply_to(message, "Date and description (example '22/12/2023-very important day')\n")
-    bot.register_next_step_handler(response_message, get_date_from_user_to_update_db)
+    bot.register_next_step_handler(response_message, add_user_dates_in_db)
 
 
 @bot.message_handler(commands=['get'])
-def get_reminder_dates_from_db(message):
+def look_at_all_user_dates(message):
     dates = []
-    dates_for_user = db.get_from(message.chat.id)
-    for single_date in dates_for_user:
+    dates_of_user = db.get_from(message.chat.id)
+    for single_date in dates_of_user:
         date_and_description = str(single_date[0]) + ")" + ' ' + single_date[2] + ' ' + single_date[3]
         dates.append(date_and_description)
     dates = '\n'.join(dates)
@@ -81,10 +81,10 @@ def get_reminder_dates_from_db(message):
 
 
 @bot.message_handler(commands=['reminder'])
-def get_date_for_reminder(message):
+def pic_up_the_counted_dates(message):
     dates = []
-    dates_for_user = db.get_from(message.chat.id)
-    for single_date in dates_for_user:
+    dates_user = db.get_from(message.chat.id)
+    for single_date in dates_user:
         date = single_date[2]
         description = single_date[3]
         date_now = datetime.datetime.now()
