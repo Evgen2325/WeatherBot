@@ -97,11 +97,4 @@ def get_date_for_reminder(message):
     bot.send_message(message.chat.id, dates_update)
 
 
-@bot.message_handler(commands=['delete'])
-def del_dates_user_from_db(message):
-    response_message = bot.reply_to(message, "Select dates by ID\n")
-    db.del_user_date(message.chat.id, message.text)
-    bot.send_message(response_message, f'Your date was deleted')
-
-
 bot.polling()
