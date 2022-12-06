@@ -23,14 +23,15 @@ def get_translate_func(message):
 
 
 def get_date_from_user_to_update_db(message):
-    user_date = message.text.split("-")[0]
-    date_description = message.text.split("-")[1]
-    check_dates = re.search(r'\d\d\D\d\d\D\d\d\d\d', user_date)
-    if user_date == check_dates[0]:
+    check_dates = message.text
+    if re.match(r'\d{2}.\d{2}.\d{4}-.*$', check_dates):
+        user_date = message.text.split("-")[0]
+        date_description = message.text.split("-")[1]
         db.set_user_date(message.chat.id, user_date, date_description)
         bot.send_message(message.chat.id, f'Your date was add')
-    elif user_date != check_dates[0]:
-        bot.send_message(message.chat.id, f'Wrong input, You need input like "22/12/2023-very important day"')
+    else:
+        bot.send_message(message.chat.id,
+                         f'Wrong input, You need input like "22/12/2023-very important day" and try again')
 
 
 @bot.message_handler(commands=['start'])
@@ -64,7 +65,7 @@ def send_translated_message(message):
 
 @bot.message_handler(commands=['add'])
 def add_reminder_dates_to_db(message):
-    response_message = bot.reply_to(message, "Date and description (example '22/12/2023-mothers day')\n")
+    response_message = bot.reply_to(message, "Date and description (example '22/12/2023-very important day')\n")
     bot.register_next_step_handler(response_message, get_date_from_user_to_update_db)
 
 
@@ -73,10 +74,8 @@ def get_reminder_dates_from_db(message):
     dates = []
     dates_for_user = db.get_from(message.chat.id)
     for single_date in dates_for_user:
-        date = single_date[2]
-        description = single_date[3]
-        dates.append(date)
-        dates.append(description)
+        date_and_description = str(single_date[0]) + ")" + ' ' + single_date[2] + ' ' + single_date[3]
+        dates.append(date_and_description)
     dates = '\n'.join(dates)
     bot.send_message(message.chat.id, f' That`s yours dates \n{dates}')
 
@@ -96,6 +95,13 @@ def get_date_for_reminder(message):
         dates.append(f'{days_until.days} days until {description}.')
     dates_update = '\n'.join(dates)
     bot.send_message(message.chat.id, dates_update)
+
+
+@bot.message_handler(commands=['delete'])
+def del_dates_user_from_db(message):
+    response_message = bot.reply_to(message, "Select dates by ID\n")
+    db.del_user_date(message.chat.id, message.text)
+    bot.send_message(response_message, f'Your date was deleted')
 
 
 bot.polling()

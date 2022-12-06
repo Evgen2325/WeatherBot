@@ -20,14 +20,10 @@ class BotDataProvide:
                                        (user_id, datetime, description))
 
     # TODO implement later
-    def del_user_date(self):
+    def del_user_date(self, user_id, ID):
         with self.connection:
-            return self.cursor.execute("DELETE FROM 'reminder' WHERE user_values")
+            return self.cursor.execute("DELETE FROM 'reminder' WHERE user_id = ?, ?", (user_id, ID))
 
-    # get values and date
     def get_from(self, user_id):
-        request = "SELECT * FROM reminder WHERE user_id = ?"
         with self.connection:
-            self.cursor.execute(request, (user_id,))
-            records = self.cursor.fetchall()
-            return records
+            return self.cursor.execute("SELECT * FROM reminder WHERE user_id = ?", (user_id,)).fetchall()
