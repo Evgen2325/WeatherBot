@@ -23,12 +23,19 @@ def get_translate_func(message):
 
 
 def add_user_dates_in_db(message):
-    check_dates = message.text
-    if re.match(r'\d{2}.\d{2}.\d{4}-.*$', check_dates):
+    if re.match(r'\d{2}/\d{2}/\d{4}[-]{1}\w*\s?.*', message.text):
         user_date = message.text.split("-")[0]
-        date_description = message.text.split("-")[1]
-        db.set_user_date(message.chat.id, user_date, date_description)
-        bot.send_message(message.chat.id, f'Your date was add')
+        pars_user_year = user_date[6:10]
+        pars_user_day = user_date[0:2]
+        pars_user_month = user_date[3:5]
+        if int(pars_user_day) <= 31 and int(pars_user_month) <= 12 and int(pars_user_year) <= 2050:
+            date_description = message.text.split("-")[1]
+            db.set_user_date(message.chat.id, user_date, date_description)
+            bot.send_message(message.chat.id, f'Your date was added')
+        else:
+            bot.send_message(message.chat.id,
+                             f'Wrong entry, your day must be no more than 31, your month must be no more than 12 '
+                             f'and your year must be no more than 2050, try again.')
     else:
         bot.send_message(message.chat.id,
                          f'Wrong input, You need input like "22/12/2023-very important day" and try again')
@@ -74,7 +81,7 @@ def look_at_all_user_dates(message):
     dates = []
     dates_of_user = db.get_from(message.chat.id)
     for single_date in dates_of_user:
-        date_and_description = str(single_date[0]) + ")" + ' ' + single_date[2] + ' ' + single_date[3]
+        date_and_description = single_date[2] + ' ' + single_date[3]
         dates.append(date_and_description)
     dates = '\n'.join(dates)
     bot.send_message(message.chat.id, f' That`s yours dates \n{dates}')
@@ -84,17 +91,20 @@ def look_at_all_user_dates(message):
 def pic_up_the_counted_dates(message):
     dates = []
     dates_user = db.get_from(message.chat.id)
-    for single_date in dates_user:
-        date = single_date[2]
-        description = single_date[3]
-        date_now = datetime.datetime.now()
-        date_x = datetime.datetime.strptime(date, '%d/%m/%Y').replace(year=date_now.year)
-        if date_x < date_now:
-            date_x = date_x.replace(year=date_now.year + 1)
-        days_until = date_x - date_now
-        dates.append(f'{days_until.days} days until {description}.')
-    dates_update = '\n'.join(dates)
-    bot.send_message(message.chat.id, dates_update)
+    if dates_user <= dates:
+        bot.send_message(message.chat.id, f'Yours list empty, you need use command "/add" before')
+    else:
+        for single_date in dates_user:
+            date = single_date[2]
+            description = single_date[3]
+            date_now = datetime.datetime.now()
+            date_x = datetime.datetime.strptime(date, '%d/%m/%Y').replace(year=date_now.year)
+            if date_x < date_now:
+                date_x = date_x.replace(year=date_now.year + 1)
+            days_until = date_x - date_now
+            dates.append(f'{days_until.days} days until {description}.')
+        dates_update = '\n'.join(dates)
+        bot.send_message(message.chat.id, dates_update)
 
 
 bot.polling()
