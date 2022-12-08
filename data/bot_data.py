@@ -19,8 +19,7 @@ class BotDataProvide:
             return self.cursor.execute("INSERT INTO 'reminder' ('user_id', 'date', 'description') VALUES (?, ?, ?)",
                                        (user_id, datetime, description))
 
-    # TODO implement later
-    def del_user_date(self, user_id, ID):
+    def del_user_date(self, user_id):
         pass
 
     def get_from(self, user_id):

@@ -23,13 +23,13 @@ def get_translate_func(message):
 
 
 def add_user_dates_in_db(message):
-    if re.match(r'\d{2}/\d{2}/\d{4}[-]{1}\w*\s?.*', message.text):
+    if re.match(r'\d{2}/\d{2}/\d{4}-\w*\s?.*', message.text):
         user_date = message.text.split("-")[0]
-        pars_user_year = user_date[6:10]
+        date_description = message.text.split("-", 1)[1]
         pars_user_day = user_date[0:2]
         pars_user_month = user_date[3:5]
+        pars_user_year = user_date[6:10]
         if int(pars_user_day) <= 31 and int(pars_user_month) <= 12 and int(pars_user_year) <= 2050:
-            date_description = message.text.split("-")[1]
             db.set_user_date(message.chat.id, user_date, date_description)
             bot.send_message(message.chat.id, f'Your date was added')
         else:
