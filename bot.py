@@ -8,6 +8,7 @@ from get_function.passwords import generate_random_password
 from get_function.weather import get_current_weather
 from get_function.translate import get_your_translate
 
+
 bot = telebot.TeleBot(os.getenv('BOT_TOKEN'))
 db = BotDataProvide("date_for_tg.db")
 
@@ -15,6 +16,11 @@ db = BotDataProvide("date_for_tg.db")
 def get_weather_func(message):
     weather = get_current_weather(message.text, os.getenv('WEATHER_API_TOKEN'))
     bot.send_message(message.chat.id, weather)
+
+
+def get_generated_password(message):
+    generation = generate_random_password(message.text)
+    bot.send_message(message.chat.id, generation)
 
 
 def get_translate_func(message):
@@ -60,8 +66,8 @@ def send_weather(message):
 
 @bot.message_handler(commands=['password'])
 def send_generated_password(message):
-    generation = generate_random_password()
-    bot.send_message(message.chat.id, generation)
+    response_message = bot.reply_to(message, "Input the desired password length:\n")
+    bot.register_next_step_handler(response_message, get_generated_password)
 
 
 @bot.message_handler(commands=['translate'])
@@ -72,7 +78,7 @@ def send_translated_message(message):
 
 @bot.message_handler(commands=['add'])
 def add_reminder_dates_to_db(message):
-    response_message = bot.reply_to(message, "Date and description (example '22/12/2023-very important day')\n")
+    response_message = bot.reply_to(message, "Date and description (example '22/12/2023-very important day').\n")
     bot.register_next_step_handler(response_message, add_user_dates_in_db)
 
 
