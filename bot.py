@@ -66,6 +66,7 @@ def add_user_dates_in_db(message):
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
+    logger.info('user input start')
     status = ['member']
     for i in status:
         if i == bot.get_chat_member(chat_id=-1001596360157, user_id=message.chat.id).status:
