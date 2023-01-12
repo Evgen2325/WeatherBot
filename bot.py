@@ -2,6 +2,7 @@ import os
 import telebot
 import datetime
 import re
+from loguru import logger
 
 from data.bot_data import BotDataProvide
 from get_function.passwords import generate_random_password
@@ -11,6 +12,7 @@ from get_function.translate import get_your_translate
 bot = telebot.TeleBot(os.getenv('BOT_TOKEN'))
 db = BotDataProvide("date_for_tg.db")
 CHANNEL_ID = '@WeatherGrandFatherBot'
+logger.add('debug.log', format='{time} {level} {message}', level='DEBUG')
 
 
 def get_weather_func(message):

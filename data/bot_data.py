@@ -1,13 +1,16 @@
 import sqlite3
+from loguru import logger
 
 
 class BotDataProvide:
     def __init__(self, date_for_tg):
+        logger.info('user connection with DB')
         self.connection = sqlite3.connect(date_for_tg, check_same_thread=False)
         self.cursor = self.connection.cursor()
         self.create_table()
 
     def create_table(self):
+        logger.info('user create new DB')
         with self.connection:
             return self.cursor.execute(
                 "CREATE TABLE IF NOT EXISTS 'reminder' (ID INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER,"
