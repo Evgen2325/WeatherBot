@@ -1,5 +1,6 @@
 import requests
 import datetime
+from loguru import logger
 
 
 def get_current_weather(city, api_token):
@@ -11,6 +12,7 @@ def get_current_weather(city, api_token):
                   'Snow': 'Снег\U0001F328',
                   'Mist': 'Туман\U0001F32B', }
     try:
+        logger.info(f'User use the function get_current_weather')
         response = requests.get(
             f'https://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_token}&lang=ru&units=metric')
         data = response.json()

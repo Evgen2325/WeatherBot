@@ -1,7 +1,9 @@
 import random
+from loguru import logger
 
 
 def generate_random_password(user_input):
+    logger.info(f'User use the function generate_random_password')
     symbols = '1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!?@#$%&'
     try:
         count_of_block_of_pass = int(user_input)
