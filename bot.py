@@ -10,8 +10,9 @@ from get_function.weather import get_current_weather
 from get_function.translate import get_your_translate
 
 bot = telebot.TeleBot(os.getenv('BOT_TOKEN'))
+logger.debug(f'The WeatherBot started')
 db = BotDataProvide("date_for_tg.db")
-CHANNEL_ID = '@WeatherGrandFatherBot'
+logger.debug(f'The WeatherBot connecting to db')
 logger.add('debug.log', format='{time} {level} {message}', level='DEBUG')
 
 
@@ -26,11 +27,12 @@ def get_generated_password(message):
 
 
 def get_translate_func(message):
-    translate = get_your_translate(message.text, os.getenv('TRANSLATOR_API_TOKEN'))
+    translate = get_your_translate(message.text)
     bot.send_message(message.chat.id, translate)
 
 
 def add_user_dates_in_db(message):
+    logger.debug(f'The function check and added user`s input')
     if re.match(r'\d{2}/\d{2}/\d{4}-\w*\s?.*', message.text):
         user_date = message.text.split("-")[0]
         date_description = message.text.split("-", 1)[1]
@@ -58,14 +60,14 @@ def add_user_dates_in_db(message):
 #     if status == bot.get_chat_member(chat_id=-1001596360157, user_id=message.chat.id).status:
 #         bot.delete_message(message.from_user.id, message.message_id)
 #         bot.send_message(message.chat.id, f'Для доступа к функциям бота, подпишитесь на канал пройдя по '
-#                                           f'ссылке:\nhttps://t.me/channel_for_python_N1')
+#                                           f'ссылке:\n https://t.me/channel_for_python_N1')
 #     else:
 #         response = bot.reply_to(message, f'Спасибо что подписались')
 #         bot.register_next_step_handler(response, send_welcome)
 
-
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
+    logger.info(f'{message.from_user.first_name} {message.from_user.last_name} use command start')
     status = ['member']
     for i in status:
         if i == bot.get_chat_member(chat_id=-1001596360157, user_id=message.chat.id).status:
@@ -76,13 +78,14 @@ def send_welcome(message):
                                               f'If you want to see all your dates type the command "/get"\n'
                                               f'If you want to see how many days are left until your dates, '
                                               f'type the command "/reminder"')
-        else:
-            bot.send_message(message.chat.id, f'Для доступа к функциям бота, подпишитесь на канал пройдя по '
-                                              f'ссылке:\nhttps://t.me/channel_for_python_N1')
+    else:
+        bot.send_message(message.chat.id, f'Для доступа к функциям бота, подпишитесь на канал пройдя по '
+                                          f'ссылке:\nhttps://t.me/channel_for_python_N1')
 
 
 @bot.message_handler(commands=['weather'])
 def send_weather(message):
+    logger.info(f'{message.from_user.first_name} {message.from_user.last_name} use command weather')
     status = ['member']
     for i in status:
         if i == bot.get_chat_member(chat_id=-1001596360157, user_id=message.chat.id).status:
@@ -95,6 +98,7 @@ def send_weather(message):
 
 @bot.message_handler(commands=['password'])
 def send_generated_password(message):
+    logger.info(f'{message.from_user.first_name} {message.from_user.last_name} use command password')
     status = ['member']
     for i in status:
         if i == bot.get_chat_member(chat_id=-1001596360157, user_id=message.chat.id).status:
@@ -107,6 +111,7 @@ def send_generated_password(message):
 
 @bot.message_handler(commands=['translate'])
 def send_translated_message(message):
+    logger.info(f'{message.from_user.first_name} {message.from_user.last_name} use command translate')
     status = ['member']
     for i in status:
         if i == bot.get_chat_member(chat_id=-1001596360157, user_id=message.chat.id).status:
@@ -119,6 +124,7 @@ def send_translated_message(message):
 
 @bot.message_handler(commands=['add'])
 def add_reminder_dates_to_db(message):
+    logger.info(f'{message.from_user.first_name} {message.from_user.last_name} use command add')
     status = ['member']
     for i in status:
         if i == bot.get_chat_member(chat_id=-1001596360157, user_id=message.chat.id).status:
@@ -131,6 +137,7 @@ def add_reminder_dates_to_db(message):
 
 @bot.message_handler(commands=['get'])
 def look_at_all_user_dates(message):
+    logger.info(f'{message.from_user.first_name} {message.from_user.last_name} use command get')
     status = ['member']
     for i in status:
         if i == bot.get_chat_member(chat_id=-1001596360157, user_id=message.chat.id).status:
@@ -148,6 +155,7 @@ def look_at_all_user_dates(message):
 
 @bot.message_handler(commands=['reminder'])
 def pic_up_the_counted_dates(message):
+    logger.info(f'{message.from_user.first_name} {message.from_user.last_name} use command reminder')
     status = ['member']
     for i in status:
         if i == bot.get_chat_member(chat_id=-1001596360157, user_id=message.chat.id).status:

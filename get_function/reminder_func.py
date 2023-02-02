@@ -1,9 +1,10 @@
 import datetime
 import csv
-
+from loguru import logger
 
 
 def get_reminder_days():
+    logger.info(f'User use the function get_reminder_days')  # Логер тут не работает
     result_dates = []
     with open('file.csv', 'r') as f:
         reader = csv.reader(f)
