@@ -74,6 +74,7 @@ def send_welcome(message):
             bot.send_message(message.chat.id, f'Hello, {message.from_user.first_name}\n'
                                               f'If you need a password, type the command "/password"\n'
                                               f'If you need to know the current weather, type the command "/weather"\n'
+                                              f'If you need to translate some text, type the command "/translate"\n'
                                               f'If you want to add your dates, type the command "/add"\n'
                                               f'If you want to see all your dates type the command "/get"\n'
                                               f'If you want to see how many days are left until your dates, '
