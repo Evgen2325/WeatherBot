@@ -27,7 +27,7 @@ def get_generated_password(message):
 
 
 def get_translate_func(message):
-    translate = get_your_translate(message.text, os.getenv('TRANSLATOR_API_TOKEN'))
+    translate = get_your_translate(message.text)
     bot.send_message(message.chat.id, translate)
 
 
